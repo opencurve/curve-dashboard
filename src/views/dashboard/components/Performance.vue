@@ -30,6 +30,7 @@ import TrendChartTimePicker, {
 
 type chartData = [number, number][]
 const divisor = 1024 * 1024
+const fixNum = (numString: string) => +(+numString / divisor).toFixed(2)
 
 const state = reactive({
   readBPSList: [] as chartData,
@@ -56,10 +57,10 @@ const getClusterPerformance = async () => {
   res.data.data.forEach(
     ({ timestamp, readBPS, readIOPS, writeBPS, writeIOPS }) => {
       const time = timestamp * 1000
-      state.readBPSList.push([time, +readBPS / divisor]) // 因为有批量更新逻辑，这里可以直接赋值
-      state.readIOPSList.push([time, +readIOPS / divisor])
-      state.writeBPSList.push([time, +writeBPS / divisor])
-      state.writeIOPSList.push([time, +writeIOPS / divisor])
+      state.readBPSList.push([time, fixNum(readBPS)]) // 因为有批量更新逻辑，这里可以直接赋值
+      state.readIOPSList.push([time, fixNum(readIOPS)])
+      state.writeBPSList.push([time, fixNum(writeBPS)])
+      state.writeIOPSList.push([time, fixNum(writeIOPS)])
     },
   )
 }
