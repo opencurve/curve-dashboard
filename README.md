@@ -1,4 +1,4 @@
-# curve-front-console
+# curve-dsashboard
 
 本项目是 curve 控制台的前端项目
 
