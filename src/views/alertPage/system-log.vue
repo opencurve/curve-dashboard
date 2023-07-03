@@ -1,0 +1,190 @@
+<template>
+    <div class="container">
+      <n-card>
+        <div class="header-bar">
+          <n-space justify="start">
+            <n-input placeholder="请输入日志内容..." v-model:value="logSearchContent" @keyup.enter="searchLog" clearable>
+                <template #suffix>
+              <n-icon :component="Search" />
+            </template>
+            </n-input>
+          </n-space>
+        </div>
+        <div class="data-form">
+          <n-data-table :columns="columns" :data="data" :bordered="false"  :scroll-x="1000" />
+          <n-space justify="end">
+            <n-pagination ref="pagination" v-model:page="page" :page-count="totalPage" :on-update:page="onUpdatePage" :page-slot="5"/>
+          </n-space>
+        </div>
+      </n-card>
+    </div>
+  </template>
+  
+  <script lang="tsx" setup>
+  import { onMounted, reactive } from 'vue';
+  import { Search } from '@vicons/ionicons5';
+  import { NDataTable, NCard, NPagination, NSpace, NTooltip, NInput  } from 'naive-ui'
+  import { useAlertStore } from '@/store/alertPage/alertMessage';
+  
+  import { ref } from 'vue'
+  const alertStore = useAlertStore()
+  const { getSystemLog } = alertStore;
+  
+  const page = ref(1);
+  const totalPage = ref(1);
+  const pagination = ref(null);
+  
+  const data = ref([]);
+
+
+  const params = reactive({
+     start: 0,
+     end: 0,
+     page: 1,
+     size: 10,
+     filter: ""   
+    })
+
+const logSearchContent = ref("")
+  
+    
+  const columns = ref([
+  {
+      title: '时间',
+      width: 'auto',
+      key: 'time',
+     
+    },
+    {
+      title: '访问者IP',
+      width: 'auto',
+      key: 'ip',
+     
+    },
+    {
+      title: '访问者',
+      width: 'auto',
+      key: 'user',
+     
+    },
+    {
+      title: '模块',
+      width: 'auto',
+      key: 'module',
+     
+    },
+    {
+      title: '操作',
+      width: 'auto',
+      key: 'method',
+     
+      // render: (row) => {
+      //   return (
+      //     <span>{row.enable? '开启' : '关闭'}</span>
+      //   )
+      // }
+    },
+    {
+      title: '结果',
+      width: 'auto',
+      key: 'errorMsg',
+     
+    },
+    {
+      title: '内容',
+      width: 'auto',
+      key: 'content', 
+      render(row) {
+      return (
+      <NTooltip trigger="hover">
+        {{
+          trigger: () => (
+            <span>{row.content.length < 15 ? row.content : row.content.substring(0, 15) + '...'}</span>
+          ),
+          default: () => (
+            <span>{row.content}</span>
+          )
+        }}
+      </NTooltip>
+    )
+  }
+    },
+  ])
+
+  const updateSystemLog = () => {
+    getSystemLog(params).then(res => {
+      data.value = res.data.data.info || [];
+      totalPage.value = Math.ceil(res.data.data.total/10)
+    })
+  }
+
+  const onUpdatePage= (currentPage: number) => { 
+    page.value = currentPage;
+    params.page = currentPage;
+    updateSystemLog();
+  }
+
+  const searchLog = () => {
+    params.filter = logSearchContent.value;
+    params.page = 1;
+    page.value = 1;
+    updateSystemLog()
+  }
+      
+  onMounted(() => { 
+  updateSystemLog()
+  })
+
+  </script>
+  
+  <style lang="scss" scoped>
+  .container {
+    flex-grow: 1;
+    background-color: rgb(245, 246, 250);
+  
+    .header-bar {
+      display: flex;
+      flex-direction: row-reverse;
+      margin-bottom: 32px;
+      // flex-direction: row-reverse;
+  
+      .header-select {
+      // flex-direction: row-reverse;   
+        display: flex;
+        justify-content: space-between;
+     flex:2
+    }
+    .header-select :first-child {
+      margin-right: 16px;
+    }
+    .header-blank {
+      // flex-direction: row-reverse;
+  
+      display: flex;
+      flex: 3
+    }
+  
+      .header-filters {
+        display: flex;
+        flex: 1;
+        column-gap: 20px;
+  
+        span {
+          margin-right: 10px;
+        }
+      }
+  
+      .filter {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+  
+        &>.n-select {
+          width: 125px;
+        }
+      }
+    }
+  }
+  </style>
+  
+  

@@ -1,0 +1,22 @@
+import { reactive } from 'vue'
+import { defineStore } from 'pinia'
+import { postSmsApi } from '@/api/{{ name }}'
+
+// state类型
+export interface I{{upperFirst name}}Data {
+  count: number
+}
+
+export const use{{upperFirst name}}Store = defineStore('{{ name }}', () => {
+  const state = reactive<I{{upperFirst name}}Data>({ count: 0 })
+  const postSms = async () => {
+    const [err, res] = await postSmsApi({ phone: '13157166968' })
+    if (err) {
+      console.log('请求报错啦', err)
+    } else if (res.status === 200) {
+      console.log('请求成功')
+    }
+  }
+
+  return { state, postSms }
+})

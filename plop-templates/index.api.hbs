@@ -1,0 +1,11 @@
+import _fetch from '@/utils/_fetch'
+import type { Res } from '@/utils/_fetch'
+
+// 一般一个请求的参数和返回值是要明确类型的
+export const postSmsApi = (data: { phone: string }) => {
+  return _fetch<Res<{ result: boolean }>>({
+    method: 'POST',
+    url: `/v2/sendSms`,
+    data,
+  })
+}

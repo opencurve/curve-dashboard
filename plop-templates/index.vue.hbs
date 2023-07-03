@@ -1,0 +1,21 @@
+<template>
+  <div @click="handleClick" class=".{{name}}Container">{{name}}</div>
+</template>
+
+<script setup lang="ts">
+import { toRefs } from 'vue'
+import { use{{upperFirst name}}Store } from '@/store/{{name}}'
+
+const {{name}}Store = use{{upperFirst name}}Store()
+const { count } = toRefs({{name}}Store.state) // 该方法可以解构读取数据
+const { postSms } = {{name}}Store
+const handleClick = () => {
+  postSms()
+  console.log('count', count)
+}
+</script>
+<style scoped lang="postcss">
+.{{name}}Container {
+  height: inherit;
+}
+</style>

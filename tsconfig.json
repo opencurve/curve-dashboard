@@ -1,0 +1,81 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "types/"],
+  "exclude": ["node_modules"],
+
+  "compilerOptions": {
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "resolveJsonModule": true,
+    "useDefineForClassFields": true, // 可以不要this.aa 来生成类属性
+
+    "allowSyntheticDefaultImports": true, // 允许使用import引入default导出的模块
+    "sourceMap": true, // 使 TypeScript 生成 sourcemaps
+
+    // Required in Vue projects
+    "jsx": "preserve",
+
+    // `"noImplicitThis": true` is part of `strict`
+    // Added again here in case some users decide to disable `strict`.
+    // This enables stricter inference for data properties on `this`.
+    "noImplicitThis": true,
+    "strict": true,
+
+    // For `<script setup>`
+    // See <https://devblogs.microsoft.com/typescript/announcing-typescript-4-5-beta/#preserve-value-imports>
+    "preserveValueImports": true,
+    // Enforce using `import type` instead of `import` for types
+    "importsNotUsedAsValues": "error",
+
+    // A few notes:
+    // - Vue 3 supports ES2016+
+    // - For Vite, the actual compilation target is determined by the
+    //   `build.target` option in the Vite config.
+    //   So don't change the `target` field here. It has to be
+    //   at least `ES2020` for dynamic `import()`s and `import.meta` to work correctly.
+    // - If you are not using Vite, feel free to override the `target` field.
+    "target": "ESNext",
+
+    // Recommended
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    // See <https://github.com/vuejs/vue-cli/pull/5688>
+    "skipLibCheck": true,
+
+    "isolatedModules": true, // 配置esbuild
+
+    "lib": [
+      // Should target at least ES2016 in Vue 3
+      // Support for newer versions of language built-ins are
+      // left for the users to include, because that would require:
+      //   - either the project doesn't need to support older versions of browsers;
+      //   - or the project has properly included the necessary polyfills.
+      "ES2016",
+
+      "DOM",
+      "DOM.Iterable",
+      "esnext"
+      // No `ScriptHost` because Vue 3 dropped support for IE
+    ],
+    "types": [
+      "node",
+      "vite/client",
+      "unplugin-vue-define-options/macros-global",
+      "@vue/runtime-core"
+    ],
+    "typeRoots": ["./node_modules/@types/", "./types"],
+    "baseUrl": ".",
+    "paths": {
+      "/@/*": ["src/*"],
+      "/#/*": ["types/*"],
+      "@/*": ["src/*"],
+      "#/*": ["types/*"]
+    }
+  },
+
+  "references": [
+    {
+      "path": "./tsconfig.node.json" //这个不能移除，因为是专门给vite配置的，具体includes不同，而一个文件又不能配置多个includes
+    }
+  ]
+}
