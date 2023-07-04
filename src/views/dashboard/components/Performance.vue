@@ -11,9 +11,10 @@
     />
     <BPSAndIOPSChart
       :read-list="state.readIOPSList"
-      :write-list="state.writeBPSList"
+      :write-list="state.writeIOPSList"
       :range="state.range"
       title="IOPS"
+      y-axis-formatter="{value} io/s"
     />
   </n-card>
 </template>
@@ -56,9 +57,9 @@ const getClusterPerformance = async () => {
     ({ timestamp, readBPS, readIOPS, writeBPS, writeIOPS }) => {
       const time = timestamp * 1000
       state.readBPSList.push([time, fixNum(readBPS)]) // 因为有批量更新逻辑，这里可以直接赋值
-      state.readIOPSList.push([time, fixNum(readIOPS)])
+      state.readIOPSList.push([time, Number(readIOPS)])
       state.writeBPSList.push([time, fixNum(writeBPS)])
-      state.writeIOPSList.push([time, fixNum(writeIOPS)])
+      state.writeIOPSList.push([time, Number(writeIOPS)])
     },
   )
 }

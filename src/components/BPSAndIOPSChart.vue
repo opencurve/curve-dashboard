@@ -20,6 +20,7 @@ const props = withDefaults(
     title: string
     readTitle?: string
     writeTitle?: string
+    yAxisFormatter?: string
   }>(),
   {
     writeList: () => [],
@@ -27,6 +28,7 @@ const props = withDefaults(
     range: () => [0, 0],
     readTitle: '',
     writeTitle: '',
+    yAxisFormatter: '{value} MB/s',
   },
 )
 
@@ -57,8 +59,9 @@ const drawChart = () => {
     },
     yAxis: {
       type: 'value',
+      scale: true,
       axisLabel: {
-        formatter: '{value} MB/s',
+        formatter: props.yAxisFormatter,
       },
     },
     series: [

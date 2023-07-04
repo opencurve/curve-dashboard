@@ -22,4 +22,5 @@ export const getEChartsFormatter = (start: number, end: number) => {
 }
 
 const divisor = 1024 * 1024
-export const fixNum = (numString: string) => +(+numString / divisor).toFixed(2)
+export const fixNum = (numString: string | number) =>
+  +(+numString / divisor).toFixed(2)

@@ -1,6 +1,7 @@
-import _fetch from '@/utils/_fetch'
+import type { getVolumeDetailParams, VolumeDetail } from '@/model/block'
 import type { Res } from '@/utils/_fetch'
-// /curvebs?method=topo.pool.list
+import _fetch from '@/utils/_fetch'
+
 export type getVolumeApiDataItem = {
   [key: string]: string | number
 }
@@ -22,11 +23,11 @@ export const getVolumeListApi = (data: {
 
 //创建普通卷
 export const createVolumeApi = (data: {
-  volumeNames: string,
-  user: string,
-  length: number,
-  password: string,
-  stripUnit: number,
+  volumeNames: string
+  user: string
+  length: number
+  password: string
+  stripUnit: number
   stripCount: number
 }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
@@ -37,10 +38,10 @@ export const createVolumeApi = (data: {
 }
 //克隆卷
 export const cloneVolumeApi = (data: {
-  src: string,
-  user: string,
-  dest: number,
-  lazy: boolean,
+  src: string
+  user: string
+  dest: number
+  lazy: boolean
 }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
     method: 'POST',
@@ -50,8 +51,8 @@ export const cloneVolumeApi = (data: {
 }
 //lazy克隆卷安装数据
 export const lazyCloneVolumeApi = (data: {
-  volumeName: string,
-  user: string,
+  volumeName: string
+  user: string
 }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
     method: 'POST',
@@ -61,10 +62,9 @@ export const lazyCloneVolumeApi = (data: {
 }
 //打快照
 export const createSnapshotApi = (data: {
-  volumeName: string,
-  user: string,
+  volumeName: string
+  user: string
   snapshotName: string
-
 }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
     method: 'POST',
@@ -74,9 +74,9 @@ export const createSnapshotApi = (data: {
 }
 //删除snapShot
 export const deleteSnapshotApi = (data: {
-  volumeName: string,
-  user: string,
-  uuids: Array<String>,
+  volumeName: string
+  user: string
+  uuids: Array<String>
   failed: boolean
 }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
@@ -86,9 +86,7 @@ export const deleteSnapshotApi = (data: {
   })
 }
 //取消打快照
-export const cancelSnapshotApi = (data: {
-  snapshots: object,
-}) => {
+export const cancelSnapshotApi = (data: { snapshots: object }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
     method: 'POST',
     url: `/curvebs?method=snapshot.cancel`,
@@ -97,8 +95,8 @@ export const cancelSnapshotApi = (data: {
 }
 //卷扩容
 export const expandVolumeApi = (data: {
-  volumeName: string,
-  length: string,
+  volumeName: string
+  length: string
 }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
     method: 'POST',
@@ -108,10 +106,10 @@ export const expandVolumeApi = (data: {
 }
 //设置卷限流
 export const throttleVolumeApi = (data: {
-  volumeName: string,
-  throttleType: string,
-  limit: number,
-  burst: number,
+  volumeName: string
+  throttleType: string
+  limit: number
+  burst: number
   burstLength: number
 }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
@@ -121,9 +119,7 @@ export const throttleVolumeApi = (data: {
   })
 }
 //删除卷
-export const deleteVolumeApi = (data: {
-  volumeNames: Object
-}) => {
+export const deleteVolumeApi = (data: { volumeNames: Object }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
     method: 'POST',
     url: `/curvebs?method=volume.delete`,
@@ -131,9 +127,7 @@ export const deleteVolumeApi = (data: {
   })
 }
 //恢复卷
-export const recoverVolumeApi = (data: {
-  volumeIds: Object
-}) => {
+export const recoverVolumeApi = (data: { volumeIds: Object }) => {
   return _fetch<Res<getVolumeApiDataItem[]>>({
     method: 'POST',
     url: `/curvebs?method=volume.recover`,
@@ -141,20 +135,24 @@ export const recoverVolumeApi = (data: {
   })
 }
 //创建卷命名空间
-export const createVolumeNamespaceApi = (data: { name: string, user: string, password: string }) => {
-  return _fetch<Res< any >>({
+export const createVolumeNamespaceApi = (data: {
+  name: string
+  user: string
+  password: string
+}) => {
+  return _fetch<Res<any>>({
     method: 'POST',
     url: `/curvebs?method=namespace.create`,
-    data
+    data,
   })
 }
 //
 //获取卷详情页的信息
-export const getVolumeDetailApi = (data: { volumeName: string }) => {
-  return _fetch<Res< any >>({
+export const getVolumeDetailApi = (data: getVolumeDetailParams) => {
+  return _fetch<Res<VolumeDetail>>({
     method: 'POST',
     url: `/curvebs?method=volume.get`,
-    data
+    data,
   })
 }
 
@@ -166,4 +164,3 @@ export const snapshotManagementApi = (data: { size: number; page: number }) => {
     data,
   })
 }
-

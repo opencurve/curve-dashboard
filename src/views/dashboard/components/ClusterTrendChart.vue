@@ -86,7 +86,7 @@ const drawChart = () => {
     yAxis: {
       type: 'value',
       axisLabel: {
-        formatter: '{value} MB/s',
+        formatter: '{value} GiB',
       },
     },
     series: [

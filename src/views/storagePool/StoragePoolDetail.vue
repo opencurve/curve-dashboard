@@ -8,7 +8,7 @@
       </div>
     </div>
     <n-divider />
-    <NCard title="存储池性能">
+    <NCard title="存储池性能" :bordered="false">
       <template #header-extra>
         <TrendChartTimePicker @change="onChange" />
       </template>
@@ -22,11 +22,12 @@
       />
       <BPSAndIOPSChart
         :read-list="state.readIOPSList"
-        :write-list="state.writeBPSList"
+        :write-list="state.writeIOPSList"
         :range="state.range"
         title="存储池IOPS"
         read-title="读IOPS"
         write-title="写IOPS"
+        y-axis-formatter="{value} io/s"
       />
     </NCard>
   </div>
@@ -86,9 +87,9 @@ const getStoragePoolDetail = async () => {
     ({ timestamp, readBPS, readIOPS, writeBPS, writeIOPS }) => {
       const time = timestamp * 1000
       state.readBPSList.push([time, fixNum(readBPS)]) // 因为有批量更新逻辑，这里可以直接赋值
-      state.readIOPSList.push([time, fixNum(readIOPS)])
+      state.readIOPSList.push([time, Number(readIOPS)])
       state.writeBPSList.push([time, fixNum(writeBPS)])
-      state.writeIOPSList.push([time, fixNum(writeIOPS)])
+      state.writeIOPSList.push([time, Number(writeIOPS)])
     },
   )
 }

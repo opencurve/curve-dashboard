@@ -1,21 +1,21 @@
-import { reactive } from 'vue'
 import { defineStore } from 'pinia'
-import { getVolumeListApi,
-   snapshotManagementApi,
-    getVolumeDetailApi, 
-    deleteVolumeApi, 
-    createVolumeApi,
-    cloneVolumeApi,
-    lazyCloneVolumeApi,
-    createSnapshotApi,
-    expandVolumeApi,
-    throttleVolumeApi,
-    recoverVolumeApi,
-    createVolumeNamespaceApi,
-    deleteSnapshotApi,
-    cancelSnapshotApi
-  } from '@/api/block'
-import type {  getVolumeApiDataItem } from '@/api/block'
+import { reactive } from 'vue'
+
+import {
+  cancelSnapshotApi,
+  cloneVolumeApi,
+  createSnapshotApi,
+  createVolumeApi,
+  createVolumeNamespaceApi,
+  deleteSnapshotApi,
+  deleteVolumeApi,
+  expandVolumeApi,
+  getVolumeListApi,
+  lazyCloneVolumeApi,
+  recoverVolumeApi,
+  snapshotManagementApi,
+  throttleVolumeApi,
+} from '@/api/block'
 
 // state类型
 // export interface BlockData {
@@ -25,39 +25,23 @@ import type {  getVolumeApiDataItem } from '@/api/block'
 export const useBlockStore = defineStore('block', () => {
   const state = reactive<BlockData>({
     volumeList: [],
-    volumePerformance: []
+    volumePerformance: [],
   })
-  
-/* 卷相关 */
+
+  /* 卷相关 */
   //获取卷列表
   const getVolumeList = async (data: any) => {
     const [err, res] = await getVolumeListApi(data)
     if (err) {
-      console.log('请求报错啦', err);
-      return err;
+      console.log('请求报错啦', err)
+      return err
     } else if (res.status === 200) {
-      let data = res.data.data.info;
-      for(let i = 0; i<data.length; i++) {
-        data[i].key = "volume_" + i;
+      const data = res.data.data.info
+      for (let i = 0; i < data.length; i++) {
+        data[i].key = 'volume_' + i
       }
-      state.volumeList = data ;
+      state.volumeList = data
       return res
-    }
-  }
-  //获取卷信息（detail）
-  const getVolumeDetail = async (data: any) => {
-    const [err, res] = await getVolumeDetailApi(data)
-    if(err) {
-      console.log('请求报错喽', err)
-      return err;
-    } else if (res.status === 200) {
-      if(res.data.data === null) {
-      return res
-      }
-      else{
-      state.volumePerformance = res.data.data.performance;
-      return res;
-      }
     }
   }
 
@@ -65,8 +49,8 @@ export const useBlockStore = defineStore('block', () => {
   const deleteVolume = async (data: any) => {
     const [err, res] = await deleteVolumeApi(data)
     if (err) {
-      console.log('请求报错啦', err);
-      return err;
+      console.log('请求报错啦', err)
+      return err
     } else if (res.status === 200) {
       return res
     }
@@ -76,105 +60,105 @@ export const useBlockStore = defineStore('block', () => {
   const recoverVolume = async (data: any) => {
     const [err, res] = await recoverVolumeApi(data)
     if (err) {
-      console.log('请求报错啦', err);
-      return err;
+      console.log('请求报错啦', err)
+      return err
     } else if (res.status === 200) {
       return res
     }
   }
 
-    //创建普通卷
-    const createVolume = async (data: any) => {
-      const [err, res] = await createVolumeApi(data)
-      if (err) {
-        console.log('请求报错啦', err);
-        return err;
-      } else if (res.status === 200) {
-        return res
-      }
+  //创建普通卷
+  const createVolume = async (data: any) => {
+    const [err, res] = await createVolumeApi(data)
+    if (err) {
+      console.log('请求报错啦', err)
+      return err
+    } else if (res.status === 200) {
+      return res
     }
-    //克隆卷
-    const cloneVolume = async (data: any) => {
-      const [err, res] = await cloneVolumeApi(data)
-      if (err) {
-        console.log('请求报错啦', err);
-        return err;
-      } else if (res.status === 200) {
-        return res
-      }
+  }
+  //克隆卷
+  const cloneVolume = async (data: any) => {
+    const [err, res] = await cloneVolumeApi(data)
+    if (err) {
+      console.log('请求报错啦', err)
+      return err
+    } else if (res.status === 200) {
+      return res
     }
-    //lazy克隆卷安装数据
-    const lazyCloneVolume = async (data: any) => {
-      const [err, res] = await lazyCloneVolumeApi(data)
-      if (err) {
-        console.log('请求报错啦', err);
-        return err;
-      } else if (res.status === 200) {
-        return res
-      }
+  }
+  //lazy克隆卷安装数据
+  const lazyCloneVolume = async (data: any) => {
+    const [err, res] = await lazyCloneVolumeApi(data)
+    if (err) {
+      console.log('请求报错啦', err)
+      return err
+    } else if (res.status === 200) {
+      return res
     }
-    //打快照
-    const createSnapshot = async (data: any) => {
-      const [err, res] = await createSnapshotApi(data)
-      if (err) {
-        console.log('请求报错啦', err);
-        return err;
-      } else if (res.status === 200) {
-        return res
-      }
+  }
+  //打快照
+  const createSnapshot = async (data: any) => {
+    const [err, res] = await createSnapshotApi(data)
+    if (err) {
+      console.log('请求报错啦', err)
+      return err
+    } else if (res.status === 200) {
+      return res
     }
-    //删除快照
-    const deleteSnapshot = async (data: any) => {
-      const [err, res] = await deleteSnapshotApi(data)
-      if (err) {
-        console.log('请求报错啦', err);
-        return err;
-      } else if (res.status === 200) {
-        return res
-      }
+  }
+  //删除快照
+  const deleteSnapshot = async (data: any) => {
+    const [err, res] = await deleteSnapshotApi(data)
+    if (err) {
+      console.log('请求报错啦', err)
+      return err
+    } else if (res.status === 200) {
+      return res
     }
-    //取消快照
-    const cancelSnapshot = async (data: any) => {
-      const [err, res] = await cancelSnapshotApi(data)
-      if (err) {
-        console.log('请求报错啦', err);
-        return err;
-      } else if (res.status === 200) {
-        return res
-      }
+  }
+  //取消快照
+  const cancelSnapshot = async (data: any) => {
+    const [err, res] = await cancelSnapshotApi(data)
+    if (err) {
+      console.log('请求报错啦', err)
+      return err
+    } else if (res.status === 200) {
+      return res
     }
-    //卷扩容
-    const expandVolume = async (data: any) => {
-      const [err, res] = await expandVolumeApi(data)
-      if (err) {
-        console.log('请求报错啦', err);
-        return err;
-      } else if (res.status === 200) {
-        return res
-      }
+  }
+  //卷扩容
+  const expandVolume = async (data: any) => {
+    const [err, res] = await expandVolumeApi(data)
+    if (err) {
+      console.log('请求报错啦', err)
+      return err
+    } else if (res.status === 200) {
+      return res
     }
-    //设置卷限流
-    const throttleVolume = async (data: any) => {
-      const [err, res] = await throttleVolumeApi(data)
-      if (err) {
-        console.log('请求报错啦', err);
-        return err;
-      } else if (res.status === 200) {
-        return res
-      }
+  }
+  //设置卷限流
+  const throttleVolume = async (data: any) => {
+    const [err, res] = await throttleVolumeApi(data)
+    if (err) {
+      console.log('请求报错啦', err)
+      return err
+    } else if (res.status === 200) {
+      return res
     }
-    //创建卷命名空间 
-    const  createVolumeNamespace = async (data: any) => {
-      const [err, res] = await createVolumeNamespaceApi(data)
-      if (err) {
-        console.log('请求报错啦', err);
-        return err;
-      } else if (res.status === 200) {
-        return res
-      }
+  }
+  //创建卷命名空间
+  const createVolumeNamespace = async (data: any) => {
+    const [err, res] = await createVolumeNamespaceApi(data)
+    if (err) {
+      console.log('请求报错啦', err)
+      return err
+    } else if (res.status === 200) {
+      return res
     }
-    
-/* 快照相关 */
+  }
+
+  /* 快照相关 */
   //获取快照列表
   const snapshotManagement = async (data: any) => {
     const [err, res] = await snapshotManagementApi(data)
@@ -188,21 +172,20 @@ export const useBlockStore = defineStore('block', () => {
   //   state
   // }
 
-
-  return { state, 
+  return {
+    state,
     getVolumeList,
-     getVolumeDetail,
-      snapshotManagement,
-       deleteVolume, 
-       createVolume,
-       cloneVolume,
-       lazyCloneVolume,
-       createSnapshot,
-       expandVolume,
-       throttleVolume,
-       recoverVolume,
-       createVolumeNamespace,
-       deleteSnapshot,
-       cancelSnapshot
-      }
+    snapshotManagement,
+    deleteVolume,
+    createVolume,
+    cloneVolume,
+    lazyCloneVolume,
+    createSnapshot,
+    expandVolume,
+    throttleVolume,
+    recoverVolume,
+    createVolumeNamespace,
+    deleteSnapshot,
+    cancelSnapshot,
+  }
 })
