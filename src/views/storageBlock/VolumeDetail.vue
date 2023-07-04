@@ -100,8 +100,6 @@ import { computed, onMounted, reactive, ref } from 'vue'
 
 import type { chartData } from '/#/index'
 import { getVolumeDetailApi } from '@/api/block'
-import VolumePerformanceChartBPS from '@/charts/block-management/VolumePerformanceChartBPS.vue'
-import VolumePerformanceChartIOPS from '@/charts/block-management/VolumePerformanceChartIOPS.vue'
 import BPSAndIOPSChart from '@/components/BPSAndIOPSChart.vue'
 import TrendChartTimePicker, {
   type onChange as onTimeChange,
