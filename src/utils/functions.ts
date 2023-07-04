@@ -17,6 +17,9 @@ export const notUserCheck = () => {
 
 export const getEChartsFormatter = (start: number, end: number) => {
   const diffDays = dayjs(end).diff(dayjs(start), 'days')
-  if (diffDays === 0) return '{hh}:{mm}:{ss}'
-  return '{yyyy}-{MM}-{dd}\n{hh}:{mm}:{ss}'
+  if (diffDays === 0) return '{HH}:{mm}:{ss}'
+  return '{yyyy}-{MM}-{dd}\n{HH}:{mm}:{ss}'
 }
+
+const divisor = 1024 * 1024
+export const fixNum = (numString: string) => +(+numString / divisor).toFixed(2)

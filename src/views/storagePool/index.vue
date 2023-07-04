@@ -1,31 +1,24 @@
 <template>
   <div class="container">
-    <n-card>
-      <div class="header-bar"></div>
-      <div class="data-form">
-        <n-data-table
-          :columns="columns"
-          :pagination="pagination"
-          :page-slot="5"
-          :data="data"
-          :bordered="false"
-        />
-      </div>
+    <n-card style="padding-top: 32px; padding-bottom: 32px">
+      <n-data-table :columns="columns" :data="state.data" :bordered="false" />
     </n-card>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { onMounted } from 'vue'
-import { NDataTable, NButton, NCard } from 'naive-ui'
-import { usePoolStore } from '@/store/storagePoolManagement/storagePool'
+import type { DataTableColumns } from 'naive-ui'
+import { NButton, NCard, NDataTable } from 'naive-ui'
+import { h, reactive } from 'vue'
+
+import { getStoragePoolApi } from '@/api/storagePool'
+import type { StoragePoolInfo } from '@/model/storagePool'
 import router from '@/router'
 
-import { ref, h } from 'vue'
-const poolStore = usePoolStore()
-const { getStoragepool } = poolStore
-
-const columns = ref([
+const state = reactive({
+  data: [] as StoragePoolInfo[],
+})
+const columns: DataTableColumns<StoragePoolInfo> = [
   {
     title: '逻辑池名称',
     width: 'auto',
@@ -70,7 +63,7 @@ const columns = ref([
     title: '容量(可回收/已分配/总量)GiB',
     width: 'auto',
     key: 'space',
-    render(row: any) {
+    render(row) {
       return `${row.space.canRecycled}/${row.space.alloc}/${row.space.total}`
     },
   },
@@ -79,47 +72,20 @@ const columns = ref([
     width: 'auto',
     key: 'createTime',
   },
-])
+]
 
-const pagination = { pageSize: 5 }
+const getStoragepool = async () => {
+  const [err, res] = await getStoragePoolApi()
+  if (err) return console.log('请求报错啦', err)
+  state.data = res.data.data
+}
 
-const data = ref([])
-
-onMounted(() => {
-  getStoragepool().then(res => {
-    data.value = res
-  })
-})
+getStoragepool()
 </script>
 
 <style lang="scss" scoped>
 .container {
   flex-grow: 1;
   background-color: rgb(245, 246, 250);
-
-  .header-bar {
-    display: flex;
-    margin-bottom: 32px;
-
-    .header-filters {
-      display: flex;
-      flex: 1;
-      column-gap: 20px;
-
-      span {
-        margin-right: 10px;
-      }
-    }
-
-    .filter {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-
-      & > .n-select {
-        width: 125px;
-      }
-    }
-  }
 }
 </style>

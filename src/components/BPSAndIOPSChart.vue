@@ -6,9 +6,9 @@
 import * as echarts from 'echarts'
 import { onMounted, ref, watch } from 'vue'
 
+import type { chartData } from '/#/index'
 import { getEChartsFormatter } from '@/utils/functions'
 
-type chartData = [number, number][]
 const main = ref<HTMLDivElement>()
 let chartIns: echarts.ECharts // NOTE: chartIns实例不能用ref接收，否则会导致echarts的事件监听失效
 

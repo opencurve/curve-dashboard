@@ -26,10 +26,18 @@ export default ({ mode }: { mode: string }) => {
       },
     },
     resolve: {
-      alias: {
-        '@': fileURLToPath(new URL('./src', import.meta.url)),
-      },
+      alias: [
+        {
+          find: '@',
+          replacement: fileURLToPath(new URL('./src', import.meta.url)),
+        },
+        {
+          find: /\/#\//,
+          replacement: fileURLToPath(new URL('./types', import.meta.url)),
+        },
+      ],
     },
+
     plugins: [
       vue(),
       AutoImport({

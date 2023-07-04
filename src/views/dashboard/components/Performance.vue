@@ -22,15 +22,13 @@
 import { NCard } from 'naive-ui'
 import { reactive } from 'vue'
 
+import type { chartData } from '/#/index'
 import { getClusterPerformanceApi } from '@/api/dashboard'
 import BPSAndIOPSChart from '@/components/BPSAndIOPSChart.vue'
 import TrendChartTimePicker, {
   type onChange as onTimeChange,
 } from '@/components/TrendChartTimePicker'
-
-type chartData = [number, number][]
-const divisor = 1024 * 1024
-const fixNum = (numString: string) => +(+numString / divisor).toFixed(2)
+import { fixNum } from '@/utils/functions'
 
 const state = reactive({
   readBPSList: [] as chartData,

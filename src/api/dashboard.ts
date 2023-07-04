@@ -1,8 +1,5 @@
-import type {
-  ClusterPerformanceDataItem,
-  ClusterTrendDataItem,
-} from '@/model/cluster'
-import type { TrendChartParams } from '@/model/common'
+import type { ClusterTrendDataItem } from '@/model/cluster'
+import type { PerformanceItem, TrendChartParams } from '@/model/common'
 import type { Res } from '@/utils/_fetch'
 import _fetch from '@/utils/_fetch'
 
@@ -50,7 +47,7 @@ export const getClusterSpaceApi = () => {
 }
 
 export const getClusterPerformanceApi = (data: TrendChartParams) => {
-  return _fetch<Res<ClusterPerformanceDataItem[]>>({
+  return _fetch<Res<PerformanceItem[]>>({
     method: 'POST',
     url: `/curvebs?method=performance.cluster`,
     data,

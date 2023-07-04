@@ -3,10 +3,3 @@ export interface ClusterTrendDataItem {
   total: number
   alloc: number
 }
-export interface ClusterPerformanceDataItem {
-  readBPS: string
-  readIOPS: string
-  timestamp: number
-  writeBPS: string
-  writeIOPS: string
-}

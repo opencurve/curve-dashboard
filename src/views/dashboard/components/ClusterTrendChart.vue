@@ -61,7 +61,6 @@ const onChange: onTimeChange = async ([start, end], interval) => {
 }
 
 const drawChart = () => {
-  // 指定图表的配置项和数据
   const formatter = getEChartsFormatter(...props.range)
   var option: echarts.EChartsOption = {
     legend: {
