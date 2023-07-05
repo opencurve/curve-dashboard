@@ -1,6 +1,8 @@
 <template>
   <div class="container">
-    <div class="background-pic"></div>
+    <div class="background-pic">
+      <img class="bg" src="/src/assets/pics/login-img.png" alt="" />
+    </div>
     <div class="view-account">
       <n-card size="medium">
         <div class="view-account-container">
@@ -8,10 +10,20 @@
             <div class="view-account-top-desc">Curve控制台</div>
           </div>
           <div class="view-account-form">
-            <n-form ref="formRef" label-placement="left" size="large" :model="formData" :rules="rules" @keydown.enter="handleSubmit">
+            <n-form
+              ref="formRef"
+              label-placement="left"
+              size="large"
+              :model="formData"
+              :rules="rules"
+              @keydown.enter="handleSubmit"
+            >
               <!-- 用户名输入 -->
               <n-form-item path="userName">
-                <n-input v-model:value="formData.userName" placeholder="请输入用户名">
+                <n-input
+                  v-model:value="formData.userName"
+                  placeholder="请输入用户名"
+                >
                   <template #prefix>
                     <n-icon size="18" color="#808695">
                       <PersonOutline />
@@ -21,7 +33,12 @@
               </n-form-item>
               <!-- 密码输入 -->
               <n-form-item path="password">
-                <n-input v-model:value="formData.password" type="password" placeholder="请输入密码" show-password-on="click">
+                <n-input
+                  v-model:value="formData.password"
+                  type="password"
+                  placeholder="请输入密码"
+                  show-password-on="click"
+                >
                   <template #prefix>
                     <n-icon size="18" color="#808695">
                       <LockClosedOutline />
@@ -29,19 +46,20 @@
                   </template>
                 </n-input>
               </n-form-item>
-              <!-- 忘记密码 -->
-              <n-form-item class="default-color">
-                <div class="flex justify-between">
-                  <span style="text-decoration: underline; cursor: pointer" @click="showResetPasswordModal">忘记密码</span>
-                </div>
-              </n-form-item>
               <!-- 登录 -->
-              <n-form-item>
-                <n-button color="#3366ff" @click="handleSubmit" size="large" block>
-                  登录
-                </n-button>
-              </n-form-item>
+              <n-button
+                color="#3366ff"
+                size="large"
+                block
+                class="subBtn"
+                @click="handleSubmit"
+              >
+                登录
+              </n-button>
             </n-form>
+            <div class="forgetPwd">
+              <span @click="showResetPasswordModal">忘记密码</span>
+            </div>
           </div>
         </div>
       </n-card>
@@ -51,21 +69,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive, toRaw } from 'vue'
-import ResetPasswordModal from '@/layout/components/ResetPasswordModal.vue'
-import { useUserStore } from '@/store/user'
-import { useRouter } from 'vue-router'
+import { LockClosedOutline, PersonOutline } from '@vicons/ionicons5'
 import md5 from 'js-md5'
 import {
+  type FormRules,
+  NButton,
   NCard,
   NForm,
   NFormItem,
-  NButton,
   NIcon,
   useMessage,
-  type FormRules,
 } from 'naive-ui'
-import { PersonOutline, LockClosedOutline } from '@vicons/ionicons5'
+import { reactive, ref, toRaw } from 'vue'
+import { useRouter } from 'vue-router'
+
+import ResetPasswordModal from '@/layout/components/ResetPasswordModal.vue'
+import { useUserStore } from '@/store/user'
 
 interface FormState {
   userName: string
@@ -99,10 +118,10 @@ const handleSubmit = e => {
     return
   } else {
     //去除密码中所有的空格
-    let pswd = formData.password.replace(/\s+/g, "");
-    pswd = md5(formData.password);
+    let pswd = formData.password.replace(/\s+/g, '')
+    pswd = md5(formData.password)
     //去除用户名中首尾的空格
-    const userName = formData.userName.trim();
+    const userName = formData.userName.trim()
     const params: FormState = {
       userName,
       password: pswd,
@@ -116,10 +135,10 @@ const handleSubmit = e => {
         message.success('登录成功！')
       }
       //如果不成功
-      else if (res.errorCode !== "") {
+      else if (res.errorCode !== '') {
         message.error('登录信息不正确，登录失败')
       }
-    });
+    })
   }
 }
 </script>
@@ -132,6 +151,17 @@ const handleSubmit = e => {
   top: 0;
   left: 0;
   background-image: url('@/assets/pics/login-background.png');
+  display: flex;
+  align-items: center;
+  .n-card {
+    background: linear-gradient(
+      -45deg,
+      #ffffff 0%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    border: 3px white solid;
+    border-radius: 4px;
+  }
 }
 
 .view-account-top-desc {
@@ -139,25 +169,45 @@ const handleSubmit = e => {
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 20px;
-  margin-left: 5px
+  margin-left: 5px;
 }
 
 .background-pic {
-  position: absolute;
-    top: 50px;
-    bottom: 0;
-    left: 108px;
-    right: 0;
-    background-size: 500px 522px;
-    background-repeat: no-repeat;
-    background-image: url(/src/assets/pics/login-img.png);
+  flex: 1;
+  height: 100%;
+  // background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  @media screen and (max-width: 1920px) {
+    img {
+      width: 41.6667vw;
+      height: auto;
+    }
+  }
+  @media screen and (min-width: 1920px) {
+    img {
+      width: 800px;
+      height: auto;
+    }
+  }
 }
 
 .view-account {
-  /* display: flex */
   width: 386px;
-  margin-top: 109px;
-  float: right;
-  margin-right: 229px;
+  margin-right: 120px;
+}
+.subBtn {
+  margin-top: 10px;
+}
+.forgetPwd {
+  display: flex;
+  justify-content: flex-end;
+  padding-bottom: 15px;
+  margin-top: 10px;
+  color: #3366ff;
+  span {
+    cursor: pointer;
+  }
 }
 </style>

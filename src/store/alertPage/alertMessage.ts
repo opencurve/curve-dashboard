@@ -1,15 +1,15 @@
-import { reactive } from 'vue'
 import { defineStore } from 'pinia'
+import { reactive } from 'vue'
+
 import {
-  getAlertMessageApi,
-  getUnreadAlertMessageApi,
-  getAlertReadIdUpdateApi,
-  getAlertConfigApi,
-  updateAlertCandidateApi,
   getAlertCandidateApi,
-  updateAlertUserApi,
-  updateAlertRuleApi,
+  getAlertConfigApi,
+  getAlertReadIdUpdateApi,
   getSystemLogApi,
+  getUnreadAlertMessageApi,
+  updateAlertCandidateApi,
+  updateAlertRuleApi,
+  updateAlertUserApi,
 } from '@/api/alert'
 
 // state类型
@@ -19,16 +19,6 @@ export interface IPoolData {
 
 export const useAlertStore = defineStore('alert', () => {
   const state = reactive<IPoolData>({ count: 0 })
-
-  const getAlertMessage = async (data: object) => {
-    const [err, res] = await getAlertMessageApi(data)
-    if (err) {
-      console.log('请求报错啦', err)
-      return err
-    } else if (res.status === 200) {
-      return res
-    }
-  }
 
   const getSystemLog = async (data: {
     start: number
@@ -118,7 +108,6 @@ export const useAlertStore = defineStore('alert', () => {
 
   return {
     state,
-    getAlertMessage,
     getSystemLog,
     getUnreadAlertMessage,
     getAlertReadIdUpdate,
