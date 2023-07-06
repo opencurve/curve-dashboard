@@ -2,26 +2,76 @@
   <div class="container">
     <div class="header">服务器详情</div>
     <div class="detailInfoContainer">
-      <div v-for="(item, key) in hostDetail" :key="key" class="detailItem">
+      <div v-for="(item, key) in info" :key="key" class="detailItem">
         <div>{{ infoMap[key] }}:</div>
-        <div v-if="key === 'cpuCores'">{{ cpuModlesDisplay }}</div>
-        <div v-else>
-          {{ item }}
+        <div>
+          {{ renderValue(item) }}
         </div>
       </div>
     </div>
     <n-divider />
-    <div class="graph">
-      <div class="utilization">
-        <CPUutilizationChart />
-        <MemoryUtilizationChart />
+    <NCard title="服务器详情" :bordered="false">
+      <template #header-extra>
+        <TrendChartTimePicker @change="onChange" />
+      </template>
+      <div class="chartContainer">
+        <DetailChart
+          :range="state.range"
+          title="cpu使用率"
+          :data="state.cpuData"
+        />
+        <DetailChart
+          :range="state.range"
+          title="内存使用率"
+          :data="state.memoryData"
+          y-axis-formatter="{value}%"
+          :color="['#2596be']"
+        />
       </div>
       <n-divider />
-      <div class="networkTraffic">
-        <NetworkTrafficReceiveChart />
-        <NetworkTrafficTransmitChart />
+      <div class="chartContainer">
+        <DetailChart
+          :range="state.range"
+          title="网络下行带宽"
+          :data="state.networkTrafficData"
+        />
+        <DetailChart
+          :range="state.range"
+          title="网络上行带宽"
+          :data="state.networkTransmitData"
+        />
       </div>
       <n-divider />
+      <div class="chartContainer">
+        <DetailChart
+          :range="state.range"
+          title="磁盘读带宽"
+          :data="state.readBPSData"
+        />
+        <DetailChart
+          :range="state.range"
+          title="磁盘写带宽"
+          :data="state.writeBPSData"
+        />
+      </div>
+      <n-divider />
+      <div class="chartContainer">
+        <DetailChart
+          :range="state.range"
+          title="磁盘读IOPS"
+          :data="state.readIOPSData"
+          y-axis-formatter="{value} io/s"
+        />
+        <DetailChart
+          :range="state.range"
+          title="磁盘写IOPS"
+          :data="state.writeIOPSData"
+          y-axis-formatter="{value} io/s"
+        />
+      </div>
+      <n-divider />
+    </NCard>
+    <!-- <div class="graph">
       <div class="diskBPS">
         <DiskPerformanceBPSReadChart />
         <DiskPerformanceBPSWriteChart />
@@ -31,14 +81,16 @@
         <DiskPerformanceIOPSReadChart />
         <DiskPerformanceIOPSWriteChart />
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts" setup>
-import { NDivider } from 'naive-ui'
-import { onMounted, ref, toRefs, watch } from 'vue'
+import { NCard, NDivider } from 'naive-ui'
+import { computed, reactive } from 'vue'
 
+import type { chartData, ChartSeries } from '/#/index'
+import { getServerDetailApi } from '@/api/server'
 import CPUutilizationChart from '@/charts/cluster-management/CPUutilizationChart.vue'
 //磁盘性能的BPS相关图表
 import DiskPerformanceBPSReadChart from '@/charts/cluster-management/DiskPerformanceBPSReadChart.vue'
@@ -49,56 +101,94 @@ import DiskPerformanceIOPSWriteChart from '@/charts/cluster-management/DiskPerfo
 import MemoryUtilizationChart from '@/charts/cluster-management/MemoryUtilizationChart.vue'
 import NetworkTrafficReceiveChart from '@/charts/cluster-management/NetworkTrafficReceiveChart.vue'
 import NetworkTrafficTransmitChart from '@/charts/cluster-management/NetworkTrafficTransmitChart.vue'
+import TrendChartTimePicker, {
+  type onChange as onTimeChange,
+} from '@/components/TrendChartTimePicker'
+import type { HostDetail } from '@/model/cluster'
 import router from '@/router'
-import { useServerStore } from '@/store/clusterManagement/server'
-import { useTimeRangeStore } from '@/store/timeRange'
-const timeRangeStore = useTimeRangeStore()
+import {
+  gEchartsSeriesData,
+  gEchartsSeriesDataByPerformance,
+} from '@/utils/functions'
 
-const { timeRange, interval } = toRefs(timeRangeStore)
+import DetailChart from './DetailChart.vue'
 
-const serverStore = useServerStore()
-const { getServerDetail } = serverStore
-const hostName = router.currentRoute.value.query.q
-const params = {
-  hostName,
-  start: Math.floor(timeRange.value.start / 1000),
-  end: Math.floor(timeRange.value.end / 1000),
-  interval: interval.value,
-}
-const hostDetail = ref([])
-let cpuModlesDisplay = ref(null)
-
-const handleGetServerDetail = () => {
-  getServerDetail(params).then(res => {
-    hostDetail.value = res.data.data.host
-    delete hostDetail.value.kernelVersion
-
-    let cpuModles = res.data.data.host.cpuCores.cpuModles
-    let firstKey = Object.keys(cpuModles)[0]
-    let firstVal = (cpuModles = cpuModles[firstKey])
-    cpuModlesDisplay.value = `${firstKey} * ${firstVal}`
-  })
-}
-
-onMounted(() => {
-  handleGetServerDetail()
-})
-
-const infoMap: { [key: string]: string } = {
+const infoMap = {
   hostName: '主机名',
   ip: 'ip地址',
   memory: '内存(单位GiB)',
   diskNum: '硬盘数量',
   machine: '硬件架构',
   kernelRelease: '内核版本',
-  // kernelVersion: '内核版本',
   operatingSystem: '操作系统',
   cpuCores: 'cpu信息',
 }
 
-watch([() => timeRange.value.start, () => timeRange.value.end], () => {
-  handleGetServerDetail()
+const state = reactive({
+  range: [0, 0] as [number, number],
+  info: {} as HostDetail['host'],
+  params: {
+    hostName: router.currentRoute.value.query.q as string,
+    start: 0,
+    end: 0,
+    interval: 0,
+  },
+  cpuData: [] as ChartSeries[],
+  memoryData: [] as ChartSeries[],
+  networkTrafficData: [] as ChartSeries[],
+  networkTransmitData: [] as ChartSeries[],
+  readBPSData: [] as ChartSeries[],
+  readIOPSData: [] as ChartSeries[],
+  writeBPSData: [] as ChartSeries[],
+  writeIOPSData: [] as ChartSeries[],
 })
+
+const getServerDetail = async () => {
+  const [err, res] = await getServerDetailApi(state.params)
+  if (err) return console.log('请求报错啦', err)
+  const {
+    host,
+    cpuUtilization,
+    memUtilization,
+    networkTraffic: { receive, transmit },
+    diskPerformance,
+  } = res.data.data
+  state.info = host
+
+  state.cpuData = gEchartsSeriesData({ cpu使用率: cpuUtilization })
+  state.memoryData = gEchartsSeriesData({ 内存使用率: memUtilization })
+  state.networkTrafficData = gEchartsSeriesData(receive, true)
+  state.networkTransmitData = gEchartsSeriesData(transmit, true)
+
+  const [readBPS, readIOPS, writeBPS, writeIOPS] =
+    gEchartsSeriesDataByPerformance(diskPerformance)
+  state.readBPSData = readBPS
+  state.readIOPSData = readIOPS
+  state.writeBPSData = writeBPS
+  state.writeIOPSData = writeIOPS
+}
+
+const onChange: onTimeChange = async ([start, end], interval) => {
+  state.params.start = Math.floor(start / 1000)
+  state.params.end = Math.floor(end / 1000)
+  state.params.interval = interval
+  state.range = [start, end]
+  getServerDetail()
+}
+
+const info = computed(() => {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { kernelVersion, ...rest } = state.info
+  return rest
+})
+
+const renderValue = (
+  data: string | number | HostDetail['host']['cpuCores'],
+) => {
+  if (typeof data === 'string' || typeof data === 'number') return data
+  const [k, v] = Object.entries(data.cpuModles)[0]
+  return `${k} * ${v}`
+}
 </script>
 
 <style scoped lang="scss">
@@ -141,5 +231,9 @@ watch([() => timeRange.value.start, () => timeRange.value.end], () => {
     font-weight: 500;
     color: #616876;
   }
+}
+.chartContainer {
+  display: flex;
+  flex: 1;
 }
 </style>
