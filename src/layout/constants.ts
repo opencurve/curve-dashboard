@@ -1,0 +1,11 @@
+export enum SiderEnum {
+  WIDTH = 240,
+  COLLAPSED_WIDTH = 68,
+  MENU_COLLAPSED_WIDTH = 68,
+
+  /* 菜单每级缩进 */
+  MENU_INDENT = 24,
+
+  PRODUCT_COLLAPSED_WIDTH = 100,
+  PRODUCT_WIDTH = 180,
+}

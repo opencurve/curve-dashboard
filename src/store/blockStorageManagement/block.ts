@@ -10,6 +10,7 @@ import {
   deleteSnapshotApi,
   deleteVolumeApi,
   expandVolumeApi,
+  getVolumeDetailApi,
   getVolumeListApi,
   lazyCloneVolumeApi,
   recoverVolumeApi,
@@ -42,6 +43,22 @@ export const useBlockStore = defineStore('block', () => {
       }
       state.volumeList = data
       return res
+    }
+  }
+
+  //获取卷信息（detail）
+  const getVolumeDetail = async (data: any) => {
+    const [err, res] = await getVolumeDetailApi(data)
+    if (err) {
+      console.log('请求报错喽', err)
+      return err
+    } else if (res.status === 200) {
+      if (res.data.data === null) {
+        return res
+      } else {
+        state.volumePerformance = res.data.data.performance
+        return res
+      }
     }
   }
 
@@ -187,5 +204,6 @@ export const useBlockStore = defineStore('block', () => {
     createVolumeNamespace,
     deleteSnapshot,
     cancelSnapshot,
+    getVolumeDetail,
   }
 })

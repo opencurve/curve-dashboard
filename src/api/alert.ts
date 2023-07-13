@@ -1,4 +1,8 @@
-import type { AlertMsgData, GetAlertMsgsParams } from '@/model/alert'
+import type {
+  AlertMsgData,
+  GetAlertMsgsParams,
+  PostAlertConfig,
+} from '@/model/alert'
 import type { Res } from '@/utils/_fetch'
 import _fetch from '@/utils/_fetch'
 
@@ -13,7 +17,7 @@ export const getAlertMessageApi = (data: GetAlertMsgsParams) => {
 
 //获取用户未读告警数量
 export const getUnreadAlertMessageApi = () => {
-  return _fetch<Res<{ result: any }>>({
+  return _fetch<Res<number>>({
     method: 'GET',
     url: `/curvebs?method=alert.unread.num.get`,
   })
@@ -60,7 +64,7 @@ export const updateAlertCandidateApi = (data: Object) => {
 }
 
 //更新告警配置
-export const updateAlertRuleApi = (data: Object) => {
+export const updateAlertRuleApi = (data: PostAlertConfig) => {
   return _fetch<Res<{ result: any }>>({
     method: 'POST',
     url: `/curvebs?method=alert.conf.update`,
@@ -70,17 +74,8 @@ export const updateAlertRuleApi = (data: Object) => {
 
 //获取告警联系人候选人
 export const getAlertCandidateApi = () => {
-  return _fetch<Res<{ result: any }>>({
+  return _fetch<Res<string[]>>({
     method: 'GET',
     url: `/curvebs?method=alert.candidate.get`,
-  })
-}
-
-//更新告警联系人
-export const updateAlertUserApi = (data: Object) => {
-  return _fetch<Res<{ result: any }>>({
-    method: 'POST',
-    url: `/curvebs?method=alert.user.update`,
-    data,
   })
 }

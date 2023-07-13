@@ -2,14 +2,11 @@ import { defineStore } from 'pinia'
 import { reactive } from 'vue'
 
 import {
-  getAlertCandidateApi,
   getAlertConfigApi,
   getAlertReadIdUpdateApi,
   getSystemLogApi,
   getUnreadAlertMessageApi,
   updateAlertCandidateApi,
-  updateAlertRuleApi,
-  updateAlertUserApi,
 } from '@/api/alert'
 
 // state类型
@@ -38,12 +35,8 @@ export const useAlertStore = defineStore('alert', () => {
 
   const getUnreadAlertMessage = async () => {
     const [err, res] = await getUnreadAlertMessageApi()
-    if (err) {
-      console.log('请求报错啦', err)
-      return err
-    } else if (res.status === 200) {
-      return res
-    }
+    if (err) return console.log('请求报错啦', err)
+    state.count = res.data.data
   }
 
   const getAlertReadIdUpdate = async (data: object) => {
@@ -76,36 +69,6 @@ export const useAlertStore = defineStore('alert', () => {
     }
   }
 
-  const getAlertCandidate = async () => {
-    const [err, res] = await getAlertCandidateApi()
-    if (err) {
-      console.log('请求报错啦', err)
-      return err
-    } else if (res.status === 200) {
-      return res
-    }
-  }
-
-  const updateAlertUser = async (data: object) => {
-    const [err, res] = await updateAlertUserApi(data)
-    if (err) {
-      console.log('请求报错啦', err)
-      return err
-    } else if (res.status === 200) {
-      return res
-    }
-  }
-
-  const updateAlertRule = async (data: object) => {
-    const [err, res] = await updateAlertRuleApi(data)
-    if (err) {
-      console.log('请求报错啦', err)
-      return err
-    } else if (res.status === 200) {
-      return res
-    }
-  }
-
   return {
     state,
     getSystemLog,
@@ -113,8 +76,5 @@ export const useAlertStore = defineStore('alert', () => {
     getAlertReadIdUpdate,
     getAlertConfig,
     updateAlertCandidate,
-    getAlertCandidate,
-    updateAlertUser,
-    updateAlertRule,
   }
 })

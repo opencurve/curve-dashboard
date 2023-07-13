@@ -9,6 +9,12 @@
 </template>
 <script setup lang="ts">
 import { NConfigProvider, NMessageProvider, zhCN } from 'naive-ui'
+
+import { useUserStore } from '@/store/user'
+
+const userStore = useUserStore()
+
+userStore.getUserInfo()
 const themeColor = 'rgba(22, 125, 255, 0.8)'
 const themeOverrides = {
   common: {

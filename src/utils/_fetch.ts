@@ -6,7 +6,7 @@ import md5 from 'js-md5'
 import { stringify } from 'qs'
 import urlParse from 'url-parse'
 
-import { signKey, timestampKey, tokenKey } from '@/constant'
+import { signKey, timestampKey, tokenKey } from '@/constants/http'
 
 import type { LiteralUnion, Recordable } from './index'
 
@@ -167,7 +167,10 @@ export class Fetch {
       const res = await fetchFn()
       return Promise.resolve([null, res])
     } catch (err: any) {
-      if (err.response.status === 401) {
+      if (
+        err.response.status === 401 &&
+        window.location.pathname !== '/login'
+      ) {
         window.location.href = '/login'
       }
       return Promise.resolve([err, null])

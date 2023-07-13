@@ -62,10 +62,9 @@ import { ref, watch } from 'vue'
 import { getAlertMessageApi } from '@/api/alert'
 import type { AlertMsg } from '@/model/alert'
 import { useAlertStore } from '@/store/alertPage/alertMessage'
-import eventBus from '@/store/eventBus'
 
 const alertStore = useAlertStore()
-const { getAlertReadIdUpdate } = alertStore
+const { getAlertReadIdUpdate, getUnreadAlertMessage } = alertStore
 
 const totalPage = ref(1)
 
@@ -156,7 +155,8 @@ const updatePageList = async (shouldUpdateReadId = false) => {
   if (data.value.length !== 0 && shouldUpdateReadId) {
     getAlertReadIdUpdate({ id: data.value[0].id }).then(res => {
       if (res?.status === 200) {
-        eventBus.message = 'alertReadUpdated'
+        // 重新获取未读信息
+        getUnreadAlertMessage()
       }
       if (res?.status !== 200) {
         message.error('传回已读信息失败')

@@ -1,37 +1,38 @@
 <template>
-  <div>
-    <Header class="header" />
-    <div class="container">
-      <Main class="main" />
-      <Nav v-if="notUserCheck()" class="nav" />
-    </div>
-  </div>
+  <NLayout class="container">
+    <NLayoutHeader class="header" bordered>
+      <Header />
+    </NLayoutHeader>
+    <NLayout has-sider>
+      <NLayoutSider
+        collapse-mode="width"
+        :collapsed-width="SiderEnum.COLLAPSED_WIDTH"
+        :width="SiderEnum.WIDTH"
+        show-trigger="bar"
+        bordered
+        :on-update:collapsed="updateCollapsed"
+      >
+        <!-- <Project :collapsed="state.collapsed" /> -->
+        <Menu />
+      </NLayoutSider>
+      <NLayoutContent>
+        <Main />
+      </NLayoutContent>
+    </NLayout>
+  </NLayout>
 </template>
 <script setup lang="ts">
-import { notUserCheck } from '../utils/functions'
+import { NLayout, NLayoutContent, NLayoutHeader, NLayoutSider } from 'naive-ui'
+import { reactive } from 'vue'
+
 import Header from './components/Header.vue'
 import Main from './components/Main.vue'
-import Nav from './components/Nav.vue'
+import Menu from './components/Menu.vue'
+import { SiderEnum } from './constants'
+
+const state = reactive({ collapsed: false })
+const updateCollapsed = (collapsed: boolean) => {
+  state.collapsed = collapsed
+}
 </script>
-<style scoped lang="postcss">
-.header {
-  height: var(--header-height);
-  border-bottom: 1px solid rgb(229, 229, 229);
-  box-shadow: 0 6px 16px rgb(0 0 0 / 5%);
-}
-
-.container {
-  display: flex;
-  flex-direction: row;
-  min-height: calc(100vh - var(--header-height));
-}
-
-.main {
-  flex: 1 1 auto;
-}
-
-.nav {
-  flex-shrink: 0;
-  order: -1;
-}
-</style>
+<!-- <style scoped lang="postcss"></style> -->

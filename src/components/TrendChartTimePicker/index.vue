@@ -1,12 +1,12 @@
 <template>
   <NSpace>
     <!-- 考虑限制时间跨度 -->
-    <n-date-picker
+    <NDatePicker
       v-model:value="state.range"
       type="datetimerange"
       :is-date-disabled="checkIsDateDisabled"
     />
-    <n-select
+    <NSelect
       v-model:value="state.interval"
       placeholder="采样时间间隔"
       :options="options"
@@ -29,7 +29,7 @@ const props = withDefaults(
   }>(),
   {
     onChange: () => {},
-    dateSubtractValue: 1,
+    dateSubtractValue: 0.5, // 默认半个小时
     intervalIndex: 2,
     options: () => [
       {

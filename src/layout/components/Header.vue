@@ -1,31 +1,11 @@
 <template>
   <div class="m-nav">
     <div class="logo">
-      <router-link to="/dashboard"
+      <router-link to="/"
         ><img src="@/assets/pics/curve-logo1-nobg.png" alt=""
       /></router-link>
     </div>
-    <!-- 选择刷新时间 -->
-    <div v-if="logInStatusVal" class="time-settings">
-      <!-- <n-icon size="25" class="clock-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 32 32"><g fill="none"><path d="M28.832 18.472c.248.18.433.436.528.728c.098.294.1.61.009.906a14.269 14.269 0 0 1-3.156 5.443a1.478 1.478 0 0 1-1.671.347l-1.955-.858a1.501 1.501 0 0 0-.68-.128a1.474 1.474 0 0 0-.66.2a1.472 1.472 0 0 0-.727 1.124l-.235 2.13a1.48 1.48 0 0 1-1.13 1.276c-2.076.495-4.24.495-6.316 0a1.484 1.484 0 0 1-1.125-1.27l-.235-2.126a1.483 1.483 0 0 0-.485-.94a1.5 1.5 0 0 0-1.58-.255l-1.955.859a1.477 1.477 0 0 1-1.668-.343a14.267 14.267 0 0 1-3.16-5.45a1.484 1.484 0 0 1 .536-1.632l1.725-1.275a1.488 1.488 0 0 0 0-2.4l-1.725-1.273a1.48 1.48 0 0 1-.536-1.623A14.249 14.249 0 0 1 5.79 6.467c.14-.151.31-.271.5-.351a1.5 1.5 0 0 1 1.17 0l1.947.858a1.493 1.493 0 0 0 2.073-1.206l.236-2.122a1.482 1.482 0 0 1 1.148-1.281a15.462 15.462 0 0 1 3.146-.362c1.052.012 2.1.133 3.127.362a1.476 1.476 0 0 1 1.147 1.284l.236 2.12a1.483 1.483 0 0 0 2.067 1.2l1.946-.857a1.483 1.483 0 0 1 1.674.346a14.231 14.231 0 0 1 3.157 5.44a1.476 1.476 0 0 1-.537 1.63l-1.72 1.273a1.48 1.48 0 0 0-.004 2.395l1.729 1.276zM16 20a4 4 0 1 0 0-8a4 4 0 0 0 0 8z" fill="currentColor"></path></g></svg>
-      </n-icon> -->
-      <!-- <n-tooltip trigger="hover" placement="bottom-end">
-        <template #trigger>
-        <n-icon size="25" class="refresh-icon">
-          <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 512 512">
-            <path
-              d="M256 48C141.31 48 48 141.32 48 256c0 114.86 93.14 208 208 208c114.69 0 208-93.31 208-208c0-114.87-93.13-208-208-208zm0 313a94 94 0 0 1 0-188h4.21l-14.11-14.1a14 14 0 0 1 19.8-19.8l40 40a14 14 0 0 1 0 19.8l-40 40a14 14 0 0 1-19.8-19.8l18-18c-2.38-.1-5.1-.1-8.1-.1a66 66 0 1 0 66 66a14 14 0 0 1 28 0a94.11 94.11 0 0 1-94 94z"
-              fill="currentColor"></path>
-          </svg>
-        </n-icon>
-      </template>
-      设置刷新时间:控制图表刷新的时间间隔
-      </n-tooltip> -->
-      <!-- <n-select size="small" placeholder="图表刷新间隔" :options="timeIntervalOption" v-model:value="timeIntervalVal"
-        @update:value="setTimeIntervalVal" /> -->
-    </div>
-    <n-divider vertical />
+
     <!-- 帮助 -->
     <n-dropdown trigger="hover" :options="options" @select="handleSelect">
       <div class="title">
@@ -55,7 +35,7 @@
       </n-icon>
     </div>
     <!-- 消息 -->
-    <div class="messages">
+    <!-- <div class="messages">
       <div
         @click="
           () => {
@@ -76,7 +56,7 @@
           </svg>
         </n-icon>
       </div>
-    </div>
+    </div> -->
     <!-- 用户信息 -->
     <div class="m-info">
       <n-dropdown
@@ -111,12 +91,9 @@
 
 <script setup lang="ts">
 import { Person } from '@vicons/ionicons5/'
-import { NDivider, NDropdown, NIcon, NModal } from 'naive-ui'
+import { NDropdown, NIcon, NModal } from 'naive-ui'
 import { ref, toRefs } from 'vue'
 import { useRouter } from 'vue-router'
-
-//为存在图表数据的store里的state设置时间间隔
-import { useDashboardStore } from '@/store/clusterOverview/dashboard'
 
 import { useUserStore } from '../../store/user'
 
@@ -126,9 +103,6 @@ const state = userStore.state
 const router = useRouter()
 const { permission, loggedIn } = toRefs(state)
 let logInStatusVal = loggedIn
-
-const dashboardStore = useDashboardStore()
-const { setTimeIntervalValInStore } = dashboardStore
 
 //用户退出登录
 const handleLogout = () => {
@@ -160,42 +134,6 @@ const handleSelect = (key: string | number) => {
   }
 }
 
-const timeIntervalOption = ref([
-  {
-    label: '关闭',
-    value: 0,
-  },
-  {
-    label: '10s',
-    value: 10,
-  },
-  {
-    label: '20s',
-    value: 20,
-  },
-  {
-    label: '40s',
-    value: 50,
-  },
-  {
-    label: '1分钟',
-    value: 60,
-  },
-  {
-    label: '3分钟',
-    value: 180,
-  },
-  {
-    label: '10分钟',
-    value: 600,
-  },
-])
-const timeIntervalVal = ref(0)
-
-const setTimeIntervalVal = () => {
-  setTimeIntervalValInStore(timeIntervalVal.value)
-}
-
 const showModal = ref(false)
 
 //展示公众号二维码
@@ -223,6 +161,10 @@ const adminOptions = [
   {
     label: '用户列表',
     key: 'user-list',
+  },
+  {
+    label: '个人设置',
+    key: 'personal-info',
   },
   {
     label: '退出登录',
@@ -262,10 +204,10 @@ h1 {
 .m-nav {
   display: flex;
   background: #ffffff;
-  border-bottom: 1px solid #e5e6eb;
   align-items: center;
   column-gap: 16px;
   padding: 0 32px;
+  height: 64px;
 
   .logo {
     flex-grow: 1;

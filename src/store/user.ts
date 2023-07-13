@@ -1,21 +1,23 @@
-import { reactive } from 'vue'
+import Cookies from 'js-cookie'
 import { defineStore } from 'pinia'
+import { reactive } from 'vue'
+import type { RouteMeta } from 'vue-router'
+
 import {
+  adminAddUserApi,
+  adminChangeUserPermissionApi,
+  adminDeleteUserApi,
+  adminEditUserApi,
+  adminGetUserApi,
+  changeAccountApi,
+  changePasswordApi,
+  getUserInfoApi,
   loginApi,
   logoutApi,
   resetPasswordApi,
-  changePasswordApi,
-  adminDeleteUserApi,
-  adminAddUserApi,
-  adminEditUserApi,
-  adminGetUserApi,
-  getUserInfoApi,
-  changeAccountApi,
-  adminChangeUserPermissionApi,
 } from '@/api/user'
+import { tokenKey } from '@/constants/http'
 import router from '@/router'
-import Cookies from 'js-cookie'
-import { tokenKey } from '@/constant'
 
 // state类型
 export const useUserStore = defineStore('user', () => {
@@ -32,6 +34,10 @@ export const useUserStore = defineStore('user', () => {
     userAddedFlag: false,
     userDeletedFlag: false,
   })
+
+  const hasPermission = (permissions: RouteMeta['permissions']) => {
+    return permissions?.includes(state.permission)
+  }
 
   //用户登录
   const loginUser = async (data: any) => {
@@ -182,6 +188,7 @@ export const useUserStore = defineStore('user', () => {
 
   return {
     state,
+    hasPermission,
     handleLogout,
     resetPassword,
     loginUser,

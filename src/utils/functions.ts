@@ -25,25 +25,27 @@ export const getEChartsFormatter = (start: number, end: number) => {
   return '{yyyy}-{MM}-{dd}\n{HH}:{mm}:{ss}'
 }
 
-const divisor = 1024 * 1024
-export const fixNum = (numString: string | number) =>
-  +(+numString / divisor).toFixed(2)
+const divisorMap = {
+  Mb: (1024 * 1024) / 8,
+  MB: 1024 * 1024,
+}
+type FixType = undefined | 'Mb' | 'MB'
+export const fixNum = (numString: string | number, fixType: FixType = 'MB') =>
+  +(+numString / divisorMap[fixType!]).toFixed(2)
 
 export const gEchartsSeriesData = (
   data: { [name: string]: RangeItem[] },
-  needFix = false,
+  fixType?: FixType,
   type = 'line',
 ) =>
-  Object.entries(data).map(([key, value]) => {
-    return {
-      type,
-      name: key,
-      data: value.map<[number, number]>(({ timestamp, value }) => [
-        timestamp * 1000,
-        !needFix ? Number(Number(value).toFixed(2)) : fixNum(value),
-      ]),
-    }
-  })
+  Object.entries(data).map(([key, value]) => ({
+    type,
+    name: key,
+    data: value.map<[number, number]>(({ timestamp, value }) => [
+      timestamp * 1000,
+      fixType ? fixNum(value, fixType) : Number(Number(value).toFixed(2)),
+    ]),
+  }))
 
 export const gEchartsSeriesDataByPerformance = (performanceList: {
   [key: string]: PerformanceItem[]
@@ -59,10 +61,9 @@ export const gEchartsSeriesDataByPerformance = (performanceList: {
     list.forEach(({ timestamp, readBPS, readIOPS, writeBPS, writeIOPS }) => {
       const time = timestamp * 1000
       void [readBPS, readIOPS, writeBPS, writeIOPS].forEach((item, index) => {
-        console.log(name, readBPS)
         data[index].push([
           time,
-          index % 2 ? Number(Number(item).toFixed(2)) : fixNum(item),
+          index % 2 ? Number(Number(item).toFixed(2)) : fixNum(item, 'MB'),
         ])
       })
     })

@@ -10,7 +10,7 @@
       </div>
     </div>
     <n-divider />
-    <NCard title="服务器详情" :bordered="false">
+    <NCard title="服务器性能" :bordered="false">
       <template #header-extra>
         <TrendChartTimePicker @change="onChange" />
       </template>
@@ -19,6 +19,7 @@
           :range="state.range"
           title="cpu使用率"
           :data="state.cpuData"
+          y-axis-formatter="{value} %"
         />
         <DetailChart
           :range="state.range"
@@ -34,11 +35,13 @@
           :range="state.range"
           title="网络下行带宽"
           :data="state.networkTrafficData"
+          y-axis-formatter="{value} Mb/s"
         />
         <DetailChart
           :range="state.range"
           title="网络上行带宽"
           :data="state.networkTransmitData"
+          y-axis-formatter="{value} Mb/s"
         />
       </div>
       <n-divider />
@@ -71,17 +74,6 @@
       </div>
       <n-divider />
     </NCard>
-    <!-- <div class="graph">
-      <div class="diskBPS">
-        <DiskPerformanceBPSReadChart />
-        <DiskPerformanceBPSWriteChart />
-      </div>
-      <n-divider />
-      <div class="diskIOPS">
-        <DiskPerformanceIOPSReadChart />
-        <DiskPerformanceIOPSWriteChart />
-      </div>
-    </div> -->
   </div>
 </template>
 
@@ -89,18 +81,8 @@
 import { NCard, NDivider } from 'naive-ui'
 import { computed, reactive } from 'vue'
 
-import type { chartData, ChartSeries } from '/#/index'
+import type { ChartSeries } from '/#/index'
 import { getServerDetailApi } from '@/api/server'
-import CPUutilizationChart from '@/charts/cluster-management/CPUutilizationChart.vue'
-//磁盘性能的BPS相关图表
-import DiskPerformanceBPSReadChart from '@/charts/cluster-management/DiskPerformanceBPSReadChart.vue'
-import DiskPerformanceBPSWriteChart from '@/charts/cluster-management/DiskPerformanceBPSWriteChart.vue'
-//磁盘性能的IOPS相关的表格
-import DiskPerformanceIOPSReadChart from '@/charts/cluster-management/DiskPerformanceIOPSReadChart.vue'
-import DiskPerformanceIOPSWriteChart from '@/charts/cluster-management/DiskPerformanceIOPSWriteChart.vue'
-import MemoryUtilizationChart from '@/charts/cluster-management/MemoryUtilizationChart.vue'
-import NetworkTrafficReceiveChart from '@/charts/cluster-management/NetworkTrafficReceiveChart.vue'
-import NetworkTrafficTransmitChart from '@/charts/cluster-management/NetworkTrafficTransmitChart.vue'
 import TrendChartTimePicker, {
   type onChange as onTimeChange,
 } from '@/components/TrendChartTimePicker'
@@ -157,8 +139,8 @@ const getServerDetail = async () => {
 
   state.cpuData = gEchartsSeriesData({ cpu使用率: cpuUtilization })
   state.memoryData = gEchartsSeriesData({ 内存使用率: memUtilization })
-  state.networkTrafficData = gEchartsSeriesData(receive, true)
-  state.networkTransmitData = gEchartsSeriesData(transmit, true)
+  state.networkTrafficData = gEchartsSeriesData(receive, 'Mb')
+  state.networkTransmitData = gEchartsSeriesData(transmit, 'Mb')
 
   const [readBPS, readIOPS, writeBPS, writeIOPS] =
     gEchartsSeriesDataByPerformance(diskPerformance)

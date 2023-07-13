@@ -1,17 +1,15 @@
 <template>
   <div class="container">
     <n-card>
-      <div class="data-form">
-        <n-data-table
-          :columns="columns"
-          :data="data"
-          :bordered="false"
-          :scroll-x="1000"
-        />
-        <n-space justify="end">
-          <n-pagination />
-        </n-space>
-      </div>
+      <n-data-table
+        :columns="columns"
+        :data="data"
+        :bordered="false"
+        :scroll-x="1000"
+      />
+      <n-space justify="end">
+        <n-pagination />
+      </n-space>
     </n-card>
     <EditModal
       ref="editModalRef"
@@ -98,7 +96,7 @@ const columns = ref([
     key: 'alertUsers',
 
     render: row => {
-      return <span>{row.alertUsers}</span>
+      return <span>{row.alertUsers.join('， ')}</span>
     },
   },
   {

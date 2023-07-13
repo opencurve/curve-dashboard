@@ -3,9 +3,10 @@
     <div class="content-container">
       <div class="left">
         <div class="left-buttons">
-          <n-button size="small" @click="batchHandle"
-            v-if="!batchHandleStatus">批量操作</n-button>
-          <n-button-group size="small" v-if="batchHandleStatus">
+          <n-button v-if="!batchHandleStatus" size="small" @click="batchHandle"
+            >批量操作</n-button
+          >
+          <n-button-group v-if="batchHandleStatus" size="small">
             <n-button type="error" @click="batchDeleteSnapshot">
               批量删除
             </n-button>
@@ -14,13 +15,31 @@
             </n-button>
           </n-button-group>
         </div>
-        <n-select class="left-select" size="small" :options="statusOptions" placeholder="请选择状态..."
-          @update-value="handleChangeStatus" />
+        <n-select
+          class="left-select"
+          size="small"
+          :options="statusOptions"
+          placeholder="请选择状态..."
+          @update-value="handleChangeStatus"
+        />
       </div>
       <div class="middle"></div>
       <div class="right">
-        <n-select v-model:value="searchKey" clearable size="small" class="right-select" :options="options" placeholder="请选择关键词 ..." />
-        <n-input v-model:value="searchContent" size="small" clearable @keyup.enter="searchSnapshot" placeholder="请输入...">
+        <n-select
+          v-model:value="searchKey"
+          clearable
+          size="small"
+          class="right-select"
+          :options="options"
+          placeholder="请选择关键词 ..."
+        />
+        <n-input
+          v-model:value="searchContent"
+          size="small"
+          clearable
+          placeholder="请输入..."
+          @keyup.enter="searchSnapshot"
+        >
           <template #suffix>
             <n-icon :component="Search" />
           </template>
@@ -28,97 +47,131 @@
       </div>
     </div>
     <div class="data-form">
-      <n-data-table :columns="columns" :data="data" :bordered="false" :row-key="rowKey"  @update:checked-row-keys="handleCheck"/>
+      <n-data-table
+        :columns="columns"
+        :data="data"
+        :bordered="false"
+        :row-key="rowKey"
+        @update:checked-row-keys="handleCheck"
+      />
       <n-space justify="end">
-        <n-pagination v-model:page="page" :page-count="totalPage" :on-update-page="updataPage" :page-slot="5"/>
+        <n-pagination
+          v-model:page="page"
+          :page-count="totalPage"
+          :on-update-page="updataPage"
+          :page-slot="5"
+        />
       </n-space>
     </div>
   </n-card>
-  <ConfirmDeleteModal ref="confirmDeleteModalRef" :rowInfo="rowInfo" @confirm-delete="deleteRow" />
+  <ConfirmDeleteModal
+    ref="confirmDeleteModalRef"
+    :row-info="rowInfo"
+    @confirm-delete="deleteRow"
+  />
 
-  <n-modal v-model:show="visible" preset="dialog" title="删除" content="确认吗?"
-        positive-text="确认" negative-text="取消" @positive-click="" @negative-click="() => {visible = false}">
-        <div>你确定要删除这些快照吗？</div>
-    </n-modal>
+  <n-modal
+    v-model:show="visible"
+    preset="dialog"
+    title="删除"
+    content="确认吗?"
+    positive-text="确认"
+    negative-text="取消"
+    @negative-click="
+      () => {
+        visible = false
+      }
+    "
+  >
+    <div>你确定要删除这些快照吗？</div>
+  </n-modal>
 </template>
-  
+
 <script lang="tsx" setup>
 import { Search } from '@vicons/ionicons5'
-import { NDataTable, NSpace, NPagination, NSelect, NInput, NIcon, NCard, NButton, useMessage, NButtonGroup } from 'naive-ui'
-import { useBlockStore } from "@/store/blockStorageManagement/block"
-import router from "@/router"
-import ConfirmDeleteModal from './modals/ConfirmDeleteModal.vue'
-import { ref, h, watch, reactive, onMounted } from 'vue'
+import {
+  NButton,
+  NButtonGroup,
+  NCard,
+  NDataTable,
+  NIcon,
+  NInput,
+  NPagination,
+  NSelect,
+  NSpace,
+  useMessage,
+} from 'naive-ui'
+import { h, onMounted, reactive, ref, watch } from 'vue'
 
-const page = ref(1);
-const totalPage = ref(1);
-const confirmDeleteModalRef = ref(null);
+import router from '@/router'
+import { useBlockStore } from '@/store/blockStorageManagement/block'
+
+import ConfirmDeleteModal from './modals/ConfirmDeleteModal.vue'
+
+const page = ref(1)
+const totalPage = ref(1)
+const confirmDeleteModalRef = ref(null)
 const rowInfo = ref(null)
 const message = useMessage()
 const batchHandleStatus = ref(false)
 const checkedUuids = ref([])
 const visible = ref(false)
 
+const rowKey = row => row.uuid
 
-
-const rowKey = (row) => row.uuid
-
-const handleCheck = (rowKeys) => { 
-  checkedUuids.value = rowKeys;
+const handleCheck = rowKeys => {
+  checkedUuids.value = rowKeys
 }
 
 const batchDeleteSnapshot = () => {
-  const params = {uuids: checkedUuids.value}
+  if (!checkedUuids.value.length) return message.warning('请选择快照')
+
+  const params = { uuids: checkedUuids.value }
 
   deleteSnapshot(params).then(res => {
     if (res.status === 200) {
       message.success('删除快照成功')
-      batchHandleStatus.value = false;
-      snapshotManagement(
-      { page: 1, size: 10 }
-    ).then(res => {
-      data.value = res.data.data.info;
-      totalPage.value = Math.ceil(res.data.data.total / 10);
-    })
-    }
-    else {
+      batchHandleStatus.value = false
+      snapshotManagement({ page: 1, size: 10 }).then(res => {
+        data.value = res.data.data.info
+        totalPage.value = Math.ceil(res.data.data.total / 10)
+      })
+    } else {
       message.error('删除快照失败')
     }
+    cancelBatchHandle()
     initialData()
-  }) 
+  })
 }
 
 const params = reactive({ page: 1, size: 10 })
 
 const updataPage = () => {
-  params.page = page.value;
+  params.page = page.value
 }
 
 //筛选状态
-const handleChangeStatus = (val) => {
-  if (val === "all") {
-    snapshotManagement(
-      { page: 1, size: 10 }
-    ).then(res => {
-      data.value = res.data.data.info;
-      totalPage.value = Math.ceil(res.data.data.total / 10);
+const handleChangeStatus = val => {
+  if (val === 'all') {
+    snapshotManagement({ page: 1, size: 10 }).then(res => {
+      data.value = res.data.data.info
+      totalPage.value = Math.ceil(res.data.data.total / 10)
     })
-  }
-  else {
-    params.status = val;
-    params.page = 1;
+  } else {
+    params.status = val
+    params.page = 1
     page.value = 1
   }
 }
 
 const statusOptions = [
-  { label: '所有', value: "all" },
+  { label: '所有', value: 'all' },
   { label: '已完成', value: 'done' },
   { label: '进行中', value: 'inProcess' },
   { label: '删除中', value: 'deleting' },
   { label: '失败删除中', value: 'errorDeleting' },
   { label: '取消中', value: 'canceling' },
-  { label: '失败', value: 'error' }
+  { label: '失败', value: 'error' },
 ]
 
 const statusMap = {
@@ -127,26 +180,26 @@ const statusMap = {
   deleting: '删除中',
   errorDeleting: '失败删除中',
   canceling: '取消中',
-  error: '失败'
+  error: '失败',
 }
 
 const options = [
   {
     label: '快照uuid',
-    value: 'uuid'
+    value: 'uuid',
   },
   {
     label: '快照租户',
-    value: 'user'
+    value: 'user',
   },
   {
     label: '快照文件名',
-    value: 'fileName'
+    value: 'fileName',
   },
 ]
 
-const searchKey = ref(null);
-const searchContent = ref("");
+const searchKey = ref(null)
+const searchContent = ref('')
 const columns = ref([
   {
     title: 'UUID',
@@ -166,11 +219,13 @@ const columns = ref([
     title: '卷名称',
     key: 'file',
     render(row) {
-      const route = { path: row.file }
-      return (
-        <routerLink to={route} >{row.file}</routerLink>
-      )
-    }
+      console.log(row.file.split('/'))
+      const route = {
+        name: 'VolumeDetail',
+        params: { path: row.file.split('/').filter((i: string) => i) },
+      }
+      return <routerLink to={route}>{row.file}</routerLink>
+    },
   },
   {
     title: '版本号',
@@ -189,17 +244,11 @@ const columns = ref([
     width: 90,
     render(row) {
       if (row.status === 'inProcess') {
-        return (
-          <span>{row.Progress}</span>
-        )
+        return <span>{row.Progress}</span>
+      } else {
+        return <span>{statusMap[row.status]}</span>
       }
-      else {
-        return (
-          <span>{statusMap[row.status]}</span>
-        )
-      }
-
-    }
+    },
   },
   {
     title: '操作',
@@ -207,142 +256,147 @@ const columns = ref([
     render(row) {
       return (
         <div>
-          <n-button size="tiny" type="normal" disabled={row.status !== "inProcess"} onClick={onCancelSnapshot(row)}>取消快照</n-button>
-          <n-button size="tiny" type="error" disabled={row.status !== 'done'} onClick={showDeleteModal(row)}>删除</n-button>
+          <n-button
+            size='tiny'
+            type='normal'
+            disabled={row.status !== 'inProcess'}
+            onClick={onCancelSnapshot(row)}
+          >
+            取消快照
+          </n-button>
+          <n-button
+            size='tiny'
+            type='error'
+            disabled={row.status !== 'done'}
+            onClick={showDeleteModal(row)}
+          >
+            删除
+          </n-button>
         </div>
       )
-    }
-  }
+    },
+  },
 ])
 
-const data = ref([]);
-let searchParams = {};
+const data = ref([])
+let searchParams = {}
 
 const batchHandle = () => {
-  batchHandleStatus.value = true;
+  batchHandleStatus.value = true
   columns.value.unshift({
-    type: 'selection'
+    type: 'selection',
   })
 }
 
 const cancelBatchHandle = () => {
   handleCheck([])
-  columns.value.shift();
-  batchHandleStatus.value = false;
+  columns.value.shift()
+  batchHandleStatus.value = false
 }
 
 const searchSnapshot = () => {
-  if (searchContent.value === "") {
+  if (searchContent.value === '') {
     initialData()
-  }
-  else {
-    if (searchKey.value === "uuid") {
+  } else {
+    if (searchKey.value === 'uuid') {
       searchParams = {
         size: 10,
         page: 1,
-        uuid: searchContent.value
+        uuid: searchContent.value,
       }
-    } else if (searchKey.value === "user") {
+    } else if (searchKey.value === 'user') {
       searchParams = {
         size: 10,
         page: 1,
-        user: searchContent.value
+        user: searchContent.value,
       }
     } else {
       searchParams = {
         size: 10,
         page: 1,
-        fileName: searchContent.value
+        fileName: searchContent.value,
       }
     }
 
-    snapshotManagement(
-      searchParams
-    ).then(res => {
+    snapshotManagement(searchParams).then(res => {
       data.value = res.data.data.info
     })
   }
 }
 
-const blockStore = useBlockStore();
-const { snapshotManagement, deleteSnapshot, cancelSnapshot } = blockStore;
+const blockStore = useBlockStore()
+const { snapshotManagement, deleteSnapshot, cancelSnapshot } = blockStore
 
 const initialData = () => {
   const params = {
     size: 10,
-    page: 1
+    page: 1,
   }
-  snapshotManagement(
-    params
-  ).then(res => {
-    data.value = res.data.data.info;
-    totalPage.value = Math.ceil(res.data.data.total / 10);
+  snapshotManagement(params).then(res => {
+    data.value = res.data.data.info
+    totalPage.value = Math.ceil(res.data.data.total / 10)
   })
 }
 
 const updatePage = () => {
-  snapshotManagement(
-    params
-  ).then(res => {
-    data.value = res.data.data.info;
-    totalPage.value = Math.ceil(res.data.data.total / 10);
+  snapshotManagement(params).then(res => {
+    data.value = res.data.data.info
+    totalPage.value = Math.ceil(res.data.data.total / 10)
   })
 }
 
-const onCancelSnapshot = (row) => () => {
-  const snapshots = [{
-    uuid: row.uuid,
-    user: row.user,
-    volumeName: row.file
-  }]
+const onCancelSnapshot = row => () => {
+  const snapshots = [
+    {
+      uuid: row.uuid,
+      user: row.user,
+      volumeName: row.file,
+    },
+  ]
   cancelSnapshot({ snapshots }).then(res => {
     if (res.status === 200) {
-      message.success('取消快照成功');
-      updatePage();
+      message.success('取消快照成功')
+      updatePage()
     } else {
-      message.info('快照已打完，无法取消');
-      updatePage();
-
+      message.info('快照已打完，无法取消')
+      updatePage()
     }
   })
 }
 
 const showDeleteModal = (row: object) => () => {
   // rowInfo.value = row;
-  rowInfo.value = { ...row, isSnapshot: true };
+  rowInfo.value = { ...row, isSnapshot: true }
   // rowInfo.value.isSnapshot = true;
-  confirmDeleteModalRef.value.showModal();
+  confirmDeleteModalRef.value.showModal()
 }
 
 const deleteRow = (row: object) => {
-  const uuids = [row.uuid];
+  const uuids = [row.uuid]
   const params = { uuids }
 
   deleteSnapshot(params).then(res => {
     if (res.status === 200) {
       message.success('删除快照成功')
-    }
-    else {
+    } else {
       message.error('删除快照失败')
     }
     initialData()
-  }) 
+  })
 }
 
-onMounted(
-  () => {
-    initialData();
-  }
-)
+onMounted(() => {
+  initialData()
+})
 
-watch(params, (value) => {
+watch(params, value => {
   snapshotManagement(value).then(res => {
-    data.value = res.data.data.info;
+    data.value = res.data.data.info
     totalPage.value = Math.ceil(res.data.data.total / params.size)
   })
 })
 </script>
-  
+
 <style lang="scss" scoped>
 .content-container {
   display: flex;
@@ -373,10 +427,9 @@ watch(params, (value) => {
     align-items: center;
   }
 
-  .right>*:first-child {
+  .right > *:first-child {
     margin-right: 7px;
   }
-
 }
 
 // .left {
@@ -423,4 +476,3 @@ watch(params, (value) => {
 //   }
 // }
 </style>
-  

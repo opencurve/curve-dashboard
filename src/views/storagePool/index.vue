@@ -33,7 +33,8 @@ const columns: DataTableColumns<StoragePoolInfo> = [
             padding: '0 4px',
           },
           quaternary: true,
-          onClick: () => router.push(`/storagepool-detail/${row.id}`),
+          onClick: () =>
+            router.push({ name: 'StoragePoolDetail', params: { id: row.id } }),
         },
         { default: () => row.name },
       )
