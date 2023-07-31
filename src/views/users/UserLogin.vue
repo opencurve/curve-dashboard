@@ -210,4 +210,9 @@ const handleSubmit = e => {
     cursor: pointer;
   }
 }
+
+.n-input:deep(input.n-input__input-el:autofill),
+.n-input:deep(input.n-input__input-el:-webkit-autofill) {
+  transition: background-color 9999s ease-in-out 9999999s !important;
+}
 </style>
