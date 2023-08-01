@@ -25,11 +25,11 @@
             <span class="cluster-icons">
               <NTooltip trigger="hover">
                 <template #trigger>
-                  <NButton quaternary>
+                  <NButton quaternary
+                    @click="changeClusterChart">
                     <NIcon
                       size="22"
                       class="refresn-icon"
-                      @click="changeClusterChart"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
