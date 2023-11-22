@@ -1,11 +1,12 @@
 <template>
+  <button @click="Try">Button</button>
   <div ref="main" style="width: 100%; height: 400px"></div>
 </template>
 
 <script setup lang="ts">
 import type { ECharts } from 'echarts'
 import * as echarts from 'echarts'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, reactive, ref, watch } from 'vue'
 
 import { getClusterStatusApi } from '@/api/dashboard'
 import { useDashboardStore } from '@/store/clusterOverview/dashboard'
@@ -25,6 +26,10 @@ const getClusterStatus = async () => {
   } else if (res.status === 200) {
     return res
   }
+}
+
+const Try = () => {
+  myChart.value?.resize()
 }
 
 const drawChart = () => {
@@ -95,7 +100,17 @@ const drawChart = () => {
 onMounted(() => {
   myChart.value = echarts.init(main.value!)
   drawChart()
+  window.addEventListener('resize', () => {
+    myChart.value?.resize()
+  })
 })
+// 为免内存泄露
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', () => {
+    myChart.value?.resize()
+  })
+})
+
 let timer = setInterval(drawChart, 1800000)
 
 watch(
