@@ -92,7 +92,9 @@ const columns = ref([
     title: '主机名',
     width: 'auto',
     key: 'hostName',
-    
+    ellipsis: {
+      tooltip: true
+    },
   },
   {
     title: '盘符',
@@ -104,13 +106,17 @@ const columns = ref([
     title: '类型',
     width: 'auto',
     key: 'diskType',
-    
+    ellipsis: {
+      tooltip: true
+    },
   },
   {
     title: '型号',
     width: 'auto',
     key: 'model',
-    
+    ellipsis: {
+      tooltip: true
+    },
   },
   // {
   //   title: '写缓存',
@@ -121,7 +127,9 @@ const columns = ref([
     title: '挂载点',
     key: 'mountPoint',
     width: 'auto',
-    
+    ellipsis: {
+      tooltip: true
+    },
     render(row) {
       if (row.mountPoint) {
         return <span>{row.mountPoint}</span>

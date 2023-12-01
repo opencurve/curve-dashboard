@@ -120,6 +120,9 @@ const columns = ref([
     title: '告警内容',
     width: 'auto',
     key: 'summary',
+    ellipsis: {
+      tooltip: true
+    },
   },
 ])
 

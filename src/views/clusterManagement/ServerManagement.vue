@@ -37,7 +37,9 @@ const columns = ref([
     title: '主机名',
     key: 'hostName',
     width: 'auto',
-
+    ellipsis: {
+      tooltip: true
+    },
     render(row) {
       return h(
         NButton,
