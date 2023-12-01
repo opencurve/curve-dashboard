@@ -89,6 +89,9 @@ const columns = ref([
     title: '访问者',
     width: 'auto',
     key: 'user',
+    ellipsis: {
+      tooltip: true
+    },
   },
   {
     title: '模块',
@@ -99,7 +102,9 @@ const columns = ref([
     title: '操作',
     width: 'auto',
     key: 'method',
-
+    ellipsis: {
+      tooltip: true
+    },
     // render: (row) => {
     //   return (
     //     <span>{row.enable? '开启' : '关闭'}</span>
@@ -110,26 +115,16 @@ const columns = ref([
     title: '结果',
     width: 'auto',
     key: 'errorMsg',
+    ellipsis: {
+      tooltip: true
+    },
   },
   {
     title: '内容',
     width: 'auto',
     key: 'content',
-    render(row) {
-      return (
-        <NTooltip trigger='hover'>
-          {{
-            trigger: () => (
-              <span>
-                {row.content.length < 15
-                  ? row.content
-                  : row.content.substring(0, 15) + '...'}
-              </span>
-            ),
-            default: () => <span>{row.content}</span>,
-          }}
-        </NTooltip>
-      )
+    ellipsis: {
+      tooltip: true
     },
   },
 ])

@@ -55,6 +55,9 @@ const columns = ref([
     title: '名称',
     width: 'auto',
     key: 'name',
+    ellipsis: {
+      tooltip: true
+    },
   },
   {
     title: '级别',
@@ -84,17 +87,25 @@ const columns = ref([
     title: '规则',
     width: 'auto',
     key: 'rule',
+    ellipsis: {
+      tooltip: true
+    },
   },
   {
     title: '描述',
     width: 'auto',
     key: 'desc',
+    ellipsis: {
+      tooltip: true
+    },
   },
   {
     title: '接收人',
     width: 'auto',
     key: 'alertUsers',
-
+    ellipsis: {
+      tooltip: true
+    },
     render: row => {
       return <span>{row.alertUsers.join('， ')}</span>
     },

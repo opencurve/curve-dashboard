@@ -39,12 +39,16 @@ const columns = ref([
   {
     title: '用户名',
     key: 'userName',
-
+    ellipsis: {
+      tooltip: true
+    },
   },
   {
     title: '邮箱',
     key: 'email',
-
+    ellipsis: {
+      tooltip: true
+    },
   },
   {
     title: '用户角色',

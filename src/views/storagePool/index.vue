@@ -23,6 +23,9 @@ const columns: DataTableColumns<StoragePoolInfo> = [
     title: '逻辑池名称',
     width: 'auto',
     key: 'name',
+    ellipsis: {
+      tooltip: true
+    },
     render(row) {
       return h(
         NButton,
