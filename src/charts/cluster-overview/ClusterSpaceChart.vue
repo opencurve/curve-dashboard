@@ -78,7 +78,10 @@ const drawChart = () => {
       legend: {
         bottom: 10,
         left: 'center',
-        data: ['已分配不可回收容量', '已分配可回收容量'],
+        data: ['已分配不可回收容量', '已分配可回收容量','未分配容量'],
+        formatter: function (name: string) {
+          return name.length > 10 ? name.substr(0, 10) + '...' : name
+        }
       },
     }
     myChart.value.setOption(option)
